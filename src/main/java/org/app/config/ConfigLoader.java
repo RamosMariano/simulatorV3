@@ -92,4 +92,11 @@ public class ConfigLoader {
         }
         return out;
     }
+    public UnitRuntime findUnitByRoomId(int id) {
+        for (UnitRuntime u : buildRuntimeUnits()) {
+            if (u.getRoom().getId() == id) return u;
+        }
+        return null;
+    }
+
 }

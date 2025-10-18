@@ -35,4 +35,8 @@ public class Room {
     public void setC(double c) { C = c; }
     public double getUA() { return UA; }
     public void setUA(double UA) { this.UA = UA; }
+    @Override
+    public String toString() {
+        return String.format("Room{id=%d, T0=%.1f, T_out=%.1f, C=%.0f, UA=%.0f}", id, T0, T_out, C, UA);
+    }
 }

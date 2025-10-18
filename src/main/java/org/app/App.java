@@ -2,7 +2,9 @@ package org.app;
 import org.app.config.ConfigLoader;
 import org.app.model.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class App 
 {
@@ -38,5 +40,28 @@ public class App
         }
 
         System.out.println("\n✅ Configuración cargada y objetos creados correctamente.");
+
+        // Construir un mapa (lo hacés una sola vez)
+        Map<Integer, UnitRuntime> roomMap = new HashMap<>();
+        for (UnitRuntime u : runtimes) {
+            roomMap.put(u.getRoom().getId(), u);
+        }
+
+        //probando modificar un room
+        UnitRuntime unit1 = loader.findUnitByRoomId(1);
+        if (unit1 != null) {
+            Room r = unit1.getRoom();
+
+            System.out.printf("Antes del cambio: T0=%.1f, T_out=%.1f%n", r.getT0(), r.getT_out());
+            r.setT0(22);
+            r.setT_out(10);
+
+            //usando el tostring de la clase room
+            System.out.printf("Después del cambio: T0=%.1f, T_out=%.1f%n", r.getT0(), r.getT_out());
+        }
+
+        System.out.println(unit1.getRoom());
+
+
     }
 }
