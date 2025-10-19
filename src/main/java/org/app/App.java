@@ -73,7 +73,12 @@ public class App {
 
         // Bloquear hasta completar la duración simulada
         while (engine.getSimTimeMs() < durationMs) {
-            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
+            try {
+                Thread.sleep(100);
+                UnitRuntime u1 = roomMap.get(1);
+
+
+            } catch (InterruptedException ignored) {}
         }
 
         // Parar

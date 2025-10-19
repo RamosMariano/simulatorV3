@@ -30,6 +30,11 @@ public class SimulationEngine {
 
     public void addUnit(EngineUnit unit) { units.add(unit); }
 
+    /** Devuelve la lista interna (mutable) de unidades. */
+    public List<EngineUnit> getUnits() {
+        return units;
+    }
+
     public void start() {
         if (running.getAndSet(true)) return;
         loopThread = new Thread(this::runLoop, "simulation-loop");
