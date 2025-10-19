@@ -7,7 +7,7 @@
         "T_out": 8.0,
         "P_in": 0.0,
         "C": 1600000.0,
-        "UA": 75.0
+        "UA": 80.0
       },
       "calefactor": {
         "type": "loza electrica",
@@ -26,13 +26,13 @@
         "T_out": 8.0,
         "P_in": 0.0,
         "C": 1600000.0,
-        "UA": 75.0
+        "UA": 80.0
       },
       "calefactor": {
         "type": "loza hidraulica",
         "p_electrica": 1500,
-        "state": false,
-        "p_entregada": 2500
+        "state": true,
+        "p_entregada": 1500
       },
       "modeloTermico": {
         "intervaloSegundos": 1
@@ -40,6 +40,6 @@
     }
   ],
   "simulacion": {
-    "duracionSegundos": 600
+    "duracionSegundos": 120000
   }
 }
