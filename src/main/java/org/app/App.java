@@ -1,6 +1,8 @@
 package org.app;
 
 import org.app.config.ConfigLoader;
+import org.app.control.DefaultScenarioHandler;
+import org.app.control.ScenarioHandler;
 import org.app.model.*;
 import org.app.sim.EngineUnitAdapter;
 import org.app.sim.SimulationEngine;
@@ -20,11 +22,12 @@ public class App {
 
         List<UnitConfig> configs = loader.getUnitConfigs();
         Simulacion sim = loader.getSimulacionConfig();
+        int escenario = sim.getEscenario();
 
         System.out.println("Duración de la simulación: " + sim.getDuracionSegundos() + " segundos");
         System.out.println("Unidades definidas: " + configs.size());
 
-        List<UnitRuntime> runtimes = loader.buildRuntimeUnits();
+        List<UnitRuntime> runtimes = loader.buildRuntimeUnits(startEpochMs);
 
         System.out.println("\n=== Objetos creados ===");
         for (UnitRuntime rt : runtimes) {
@@ -38,6 +41,18 @@ public class App {
                     h,
                     mt.getIntervaloSegundos(), mt.getT(), mt.temperaturaActual()
             );
+            // (Opcional) Verificación rápida de sensores creados:
+            if (rt.getSensorHt() != null) {
+                System.out.println("  HT.ts(seg): " + rt.getSensorHt().getTs()
+                        + " | HT.tempC: " + rt.getSensorHt().getParams().temperature0.tC
+                        + " | HT.id(temp:0): " + rt.getSensorHt().getParams().temperature0.id);
+            }
+            if (rt.getSensorSw() != null) {
+                System.out.println("  SW.id: " + rt.getSensorSw().getId()
+                        + " | SW.source: " + rt.getSensorSw().getSource()
+                        + " | SW.output: " + rt.getSensorSw().isOutput()
+                        + " | SW.ts(ms): " + rt.getSensorSw().getTs());
+            }
         }
 
         System.out.println("\n✅ Configuración cargada y objetos creados correctamente.");
@@ -68,6 +83,8 @@ public class App {
             engine.addUnit(new EngineUnitAdapter(rt, sampleEveryMs));
         }
 
+        ScenarioHandler handler = new DefaultScenarioHandler(roomMap, escenario);
+
         // Arrancar
         engine.start();
 
@@ -75,7 +92,8 @@ public class App {
         while (engine.getSimTimeMs() < durationMs) {
             try {
                 Thread.sleep(100);
-                UnitRuntime u1 = roomMap.get(1);
+                handler.onTick(engine.getSimTimeMs(), engine.getCurrentTimestampMs());
+
 
 
             } catch (InterruptedException ignored) {}

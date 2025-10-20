@@ -51,6 +51,12 @@ public class ConfigLoader {
                 if (r.getC() <= 0) throw new IllegalStateException("Room.C debe ser > 0 (id=" + r.getId() + ")");
                 if (r.getUA() <= 0) throw new IllegalStateException("Room.UA debe ser > 0 (id=" + r.getId() + ")");
             }
+            // >>> DEFAULT opcional para 'escenario' si no viene en JSON
+            Simulacion sim = bundle.getSimulacion();
+            if (sim.getEscenario() <= 0) {
+                sim.setEscenario(1);
+            }
+            // <<<
         } catch (IOException e) {
             throw new RuntimeException("Error leyendo configuración: " + e.getMessage(), e);
         }
@@ -67,10 +73,10 @@ public class ConfigLoader {
     }
 
     /**
-     * Fabrica objetos listos para usar: por cada unit crea un ModeloTermico con t=0.
-     * NO avanza el tiempo, NO crea hilos, NO ejecuta simulaciones.
+     * Fabrica objetos listos para usar: por cada unit crea un ModeloTermico con t=0
+     * y además crea SensorHt y SensorSw inicializados con startEpochMs.
      */
-    public List<UnitRuntime> buildRuntimeUnits() {
+    public List<UnitRuntime> buildRuntimeUnits(long startEpochMs) {
         List<UnitRuntime> out = new ArrayList<>();
         for (UnitConfig u : bundle.getUnits()) {
             Room r = u.getRoom();
@@ -83,17 +89,22 @@ public class ConfigLoader {
 
             double T0   = r.getT0();
             double TOut = r.getT_out();
-            double PIn  = (h != null && h.isState()) ? h.getP_entregada() : 0.0; // o usar siempre h.getP_entregada()
+            double PIn  = (h != null && h.isState()) ? h.getP_entregada() : 0.0;
             double C    = r.getC();
             double UA   = r.getUA();
 
             ModeloTermico mt = new ModeloTermico(T0, TOut, PIn, C, UA, 0.0, intervalo);
-            out.add(new UnitRuntime(r, h, mt));
+
+            // >>> Construye UnitRuntime con sensores usando startEpochMs
+            out.add(new UnitRuntime(r, h, mt, startEpochMs));
+            // <<<
         }
         return out;
     }
-    public UnitRuntime findUnitByRoomId(int id) {
-        for (UnitRuntime u : buildRuntimeUnits()) {
+
+    public UnitRuntime findUnitByRoomId(int id, List<UnitRuntime> cache) {
+        if (cache == null) return null;
+        for (UnitRuntime u : cache) {
             if (u.getRoom().getId() == id) return u;
         }
         return null;

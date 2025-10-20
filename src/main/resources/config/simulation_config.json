@@ -40,6 +40,7 @@
     }
   ],
   "simulacion": {
-    "duracionSegundos": 120000
+    "duracionSegundos": 1000,
+    "escenario": 1
   }
 }

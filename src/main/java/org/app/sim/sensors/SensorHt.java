@@ -1,4 +1,4 @@
-package org.app.sim;
+package org.app.sim.sensors;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
