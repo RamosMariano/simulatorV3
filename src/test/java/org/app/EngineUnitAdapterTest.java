@@ -47,9 +47,53 @@ public class EngineUnitAdapterTest extends TestCase {
         adapter.tick(1000, 1000, 0); // 1 segundo de simulación
 
         double tempFinal = room.getT0();
+        System.out.printf("testTemperaturaNoCambiaSiHeaterApagado%n");
         System.out.printf("Temp inicial: %.3f, final: %.3f%n", tempInicial, tempFinal);
 
         // Sin potencia, el cambio debería ser muy pequeño (enfriamiento leve)
         assertTrue("Temperatura no debería aumentar con heater apagado", tempFinal <= tempInicial);
+    }
+    
+    // === TEST 2 ===
+    public void testTemperaturaSubeConHeaterEncendido() {
+        heater.setState(true); // 🟢 encendido
+
+        double tempInicial = room.getT0();
+        adapter.tick(1000, 1000, 0); // simula 1 s
+        double tempFinal = room.getT0();
+        System.out.printf("testTemperaturaSubeConHeaterEncendido%n");
+        System.out.printf("Temp inicial: %.3f, final: %.3f%n", tempInicial, tempFinal);
+
+        assertTrue("Temperatura debe subir con heater encendido",
+                tempFinal > tempInicial);
+    }
+    
+    // === TEST 3 ===
+    public void testEnergiaAcumuladaConHeaterEncendido() {
+        heater.setState(true);
+        double energiaInicial = adapter.getEnergiaWh();
+
+        adapter.tick(1000, 1000, 0);
+        double energiaFinal = adapter.getEnergiaWh();
+
+        double deltaWh = energiaFinal - energiaInicial;
+        System.out.printf("testEnergiaAcumuladaConHeaterEncendido%n");
+        System.out.printf("Energía consumida en 1s: %.5f Wh%n", deltaWh);
+
+        assertEquals("Debe haber energía acumulada correcta", 1800.0 / 3600.0, deltaWh, 0.0001);
+
+    }
+    
+ // === TEST 4 ===
+    public void testSinConsumoConHeaterApagado() {
+        heater.setState(false);
+
+        adapter.tick(2000, 2000, 0);
+        assertEquals("Con heater apagado, energía no debe acumularse",
+                0.0, adapter.getEnergiaWh(), 0.0001);
+        
+        System.out.printf("testSinConsumoConHeaterApagado%n");
+        System.out.printf("Energía consumida en 2s: " + adapter.getEnergiaWh()+ "%n");
+
     }
 }
