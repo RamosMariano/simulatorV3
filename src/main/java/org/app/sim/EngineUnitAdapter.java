@@ -8,11 +8,10 @@ import org.app.model.UnitRuntime;
 /**
  * Enlaza tu UnitRuntime (Room + Calefactor + ModeloTermico) al EngineUnit simple.
  * Actualiza T0 con el modelo RC en cada tick.
- *
  * CONCURRENCIA:
  * - El hilo del engine ejecuta tick().
  * - El handler del escenario (en el hilo del main) puede modificar Room/Calefactor.
- * - Para evitar condiciones de carrera, todo el avance de estado se hace dentro de
+ * - Para evitar condiciones de carrera, el avance de estado se hace dentro de
  *   synchronized(rt), el MISMO monitor que debe usar el handler (synchronized(u)).
  */
 public class EngineUnitAdapter implements EngineUnit {
